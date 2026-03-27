@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Map;
 
 @RestController
@@ -39,6 +40,9 @@ public class DecompilationController {
         if (libraries == null) {
             libraries = new File[0];
         }
+        Arrays.stream(sources).filter(s -> !s.exists()).forEach(s -> {
+            throw new ApiException("source " + s + " does not exist or cannot be found", HttpStatus.BAD_REQUEST);
+        });
         ResultSaver resultSaver = new ResultSaver();
         Decompiler.Builder builder = new Decompiler.Builder()
                 .inputs(sources)
